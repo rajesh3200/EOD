@@ -43,7 +43,13 @@ def lookup(sym):
     if not fpath.exists():
         exit(f"{sym}: File not found.")
 
-    df = read_csv(fpath, index_col="Date", parse_dates=True)
+    if args.prev:
+        # Create Dataframe of previous number of days before the last 30 days
+        df = read_csv(fpath, index_col="Date", parse_dates=True)[
+            :-config.DLV_AVG_LEN
+        ]
+    else:
+        df = read_csv(fpath, index_col="Date", parse_dates=True)
     
     global df_MarketCap
     if df_MarketCap.empty:
@@ -109,6 +115,7 @@ DQ: Delivery qty  TQ: Qty per trade  IM: Institutional Money [Above average DQ a
 parser = ArgumentParser(prog="dget.py")
 
 parser.add_argument("-d","--date",type=datetime.fromisoformat,metavar="str",help="ISO format date YYYY-MM-DD.")
+parser.add_argument("-p","--prev",type=int,metavar="str",help="previous period days")
 
 group = parser.add_mutually_exclusive_group(required=True)
 
@@ -229,10 +236,18 @@ else:
             print(f"Error: File not found: {fpath.name}")
             continue
 
-        # Create Dataframe of last 30 days
-        df = read_csv(fpath, index_col="Date", parse_dates=True)[
-            -config.DLV_AVG_LEN:
-        ]
+        if args.prev:
+            previousdays = pd.to_numeric(args.prev) + config.DLV_AVG_LEN   
+
+            # Create Dataframe of previous number of days before the last 30 days
+            df = read_csv(fpath, index_col="Date", parse_dates=True)[
+                -previousdays:-config.DLV_AVG_LEN
+            ]
+        else:
+            # Create Dataframe of last 30 days
+            df = read_csv(fpath, index_col="Date", parse_dates=True)[
+                -config.DLV_AVG_LEN:
+            ]
 
         if args.date:
             filter_date = pd.Timestamp(args.date)
