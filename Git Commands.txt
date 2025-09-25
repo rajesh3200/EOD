@@ -1,0 +1,3 @@
+git config --local credential.helper ""
+
+key - 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
