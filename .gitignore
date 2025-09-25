@@ -141,3 +141,4 @@ src/defs/user.json
 src/data/*
 !src/data/sectors.csv
 src/eod2_data/daily/*
+src/eod2_data/

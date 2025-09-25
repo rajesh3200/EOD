@@ -90,24 +90,25 @@ def lookup(sym):
     )
     df["VOL"] = df["VOL"].apply(c.num)
 
-    df = df[-config.DGET_DAYS :][["DQ", "TQ", "IM", "VOL","TO_percent"]]
+    df = df[-config.DGET_DAYS :][["DQ", "TQ", "IM", "VOL","Close","TO_percent"]]
 
     print(
         f"""{c.WHITE}Units represent average multiples. 1x 2x etc. < 1: below average.
 DQ: Delivery qty  TQ: Qty per trade  IM: Institutional Money [Above average DQ and TQ]{c.ENDC}\n"""
     )
     print(
-        f'{c.WHITE}DATE{" " * 10}DQ{" " * 5}TQ{" " * 5}VOL{" " * 4}IM{c.ENDC}'
+        f'{c.WHITE}DATE{" " * 10}DQ{" " * 5}TQ{" " * 5}VOL{" " * 4}Close{" " * 6}IM{" " * 5}Turnover{c.ENDC}'
     )
 
-    for Index, DQ, TQ, IM, VOL,TO_percent in df[::-1].itertuples():
+    for Index, DQ, TQ, IM, VOL,Close,TO_percent in df[::-1].itertuples():
         print(
             f'{c.CYAN}{Index.strftime("%d %b %Y").ljust(13)}{c.ENDC}',
             DQ.ljust(17).ljust(17),
             TQ.ljust(17),
             VOL.ljust(17),
-            IM,
-            TO_percent,
+            str(Close).ljust(10),
+            IM.ljust(17),
+            str(TO_percent).ljust(17),
         )
     exit()
 
